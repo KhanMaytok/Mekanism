@@ -138,7 +138,7 @@ public class TileEntitySolarNeutronActivator extends TileEntityRecipeMachine<Gas
         }
         inputSlot.fillTank();
         outputSlot.drainTank();
-        productionRate = recalculateProductionRate();
+        productionRate = 3.0F;
         recipeCacheLookupMonitor.updateAndProcess();
     }
 
@@ -157,24 +157,7 @@ public class TileEntitySolarNeutronActivator extends TileEntityRecipeMachine<Gas
     private boolean canFunction() {
         // Sort out if the solar neutron activator can see the sun; we no longer check if it's raining here,
         // since under the new rules, we can still function when it's raining, albeit at a significant penalty.
-        return MekanismUtils.canFunction(this) && WorldUtils.canSeeSun(level, worldPosition.above());
-    }
-
-    private float recalculateProductionRate() {
-        World world = getLevel();
-        if (world == null || !canFunction()) {
-            return 0;
-        }
-        //Get the brightness of the sun; note that there are some implementations that depend on the base
-        // brightness function which doesn't take into account the fact that rain can't occur in some biomes.
-        float brightness = WorldUtils.getSunBrightness(world, 1.0F);
-        //Production is a function of the peak possible output in this biome and sun's current brightness
-        float production = peakProductionRate * brightness;
-        //If the solar neutron activator is in a biome where it can rain, and it's raining penalize production by 80%
-        if (needsRainCheck && (world.isRaining() || world.isThundering())) {
-            production *= 0.2F;
-        }
-        return production;
+        return MekanismUtils.canFunction(this);
     }
 
     @Nonnull
